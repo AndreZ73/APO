@@ -30,19 +30,13 @@ public class MenuController implements Initializable {
 
     private static boolean isMuted = false;
 
-    // Rutas a las imágenes de los iconos.
-    // Confirma la ubicación de tus archivos de icono y ajusta las rutas si es necesario.
-    // Basado en tu FXML, parecía que usabas /BackgroundMusic/ y un nombre específico.
-    // Voy a mantener las rutas genéricas /Icons/ para claridad,
-    // pero ASEGÚRATE de que las tuyas sean EXACTAS.
-    private final String UNMUTE_ICON_PATH = "/Icons/unmute_icon.png"; // Icono para cuando el sonido está ON
-    private final String MUTE_ICON_PATH = "/Icons/mute_icon.png";     // Icono para cuando el sonido está OFF
+    private final String UNMUTE_ICON_PATH = "/Icons/unmute_icon.png";
+    private final String MUTE_ICON_PATH = "/Icons/mute_icon.png";
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // --- Lógica para cargar la imagen de fondo ---
-        String imageUrlPath = "/Background/menu_background.png"; // Verifica si es .png o .jpg
+        String imageUrlPath = "/Background/menu_background.png";
         URL imageUrl = getClass().getResource(imageUrlPath);
 
         if (imageUrl != null) {
@@ -54,9 +48,6 @@ public class MenuController implements Initializable {
         } else {
             System.err.println("Error: Imagen de fondo no encontrada en " + imageUrlPath + ". Revisa la ruta y la extensión.");
         }
-
-        // --- Lógica para el icono del botón de mute/unmute ---
-        updateMuteIcon(); // Llama a este método para establecer la imagen inicial del icono
     }
 
     @FXML
@@ -89,11 +80,10 @@ public class MenuController implements Initializable {
         }
     }
 
-    // Método NUEVO para salir de la aplicación
     @FXML
     public void exitApplication(ActionEvent event) {
-        Platform.exit(); // Cierra la aplicación JavaFX
-        System.exit(0); // Cierra el proceso JVM completamente
+        Platform.exit();
+        System.exit(0);
     }
 
     private void updateMuteIcon() {

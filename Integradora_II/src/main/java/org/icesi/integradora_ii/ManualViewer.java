@@ -74,11 +74,8 @@ public class ManualViewer {
             VBox rootManual = new VBox(scrollPane);
             rootManual.setStyle("-fx-background-color: #a11616;");
 
-            // ¡LA CLAVE ESTÁ AQUÍ! Indicar al VBox que el scrollPane debe crecer verticalmente
             VBox.setVgrow(scrollPane, Priority.ALWAYS); //
 
-            // Mantén el tamaño de la ventana como lo tenías, por ejemplo 600x500
-            // O ajústalo ligeramente si quieres que la ventana en sí sea un poco más alta o ancha
             Scene manualScene = new Scene(rootManual, 600, 500);
             manualStage.setScene(manualScene);
 

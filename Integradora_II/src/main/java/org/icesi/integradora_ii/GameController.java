@@ -41,18 +41,15 @@ public class GameController implements Initializable {
     private Car1 car1;
 
     @FXML
-    private Button muteButton; // Este botón debe estar en tu FXML con fx:id="muteButton"
+    private Button muteButton;
 
-    // YA NO NECESITAMOS @FXML para gameMuteIcon, porque lo crearemos en Java
-    private ImageView gameMuteIcon; // Eliminamos @FXML y lo hacemos privado sin inyección
+    private ImageView gameMuteIcon;
 
     @FXML
-    private Button gameManualButton; // Si tienes este botón en tu FXML
+    private Button gameManualButton;
 
-    // Rutas a las imágenes de los iconos de mute/unmute.
-    // **CRÍTICO: ASEGÚRATE de que estas rutas son EXACTAS y que los archivos existen en src/main/resources/Icons/**
-    private final String UNMUTE_ICON_PATH = "/Icons/unmute_icon.png"; // Icono para sonido activado
-    private final String MUTE_ICON_PATH = "/Icons/mute_icon.png";     // Icono para sonido desactivado
+    private final String UNMUTE_ICON_PATH = "/Icons/unmute_icon.png";
+    private final String MUTE_ICON_PATH = "/Icons/mute_icon.png";
 
 
     @FXML
@@ -61,9 +58,9 @@ public class GameController implements Initializable {
         if (HelloApplication.getMediaPlayer() != null) {
             HelloApplication.getMediaPlayer().setMute(isMuted);
         }
-        MenuController.setMuted(isMuted); // Actualiza el estado global en MenuController
-        updateGameMuteIcon(); // Llama para actualizar la imagen del icono
-        canvas.requestFocus(); // Mantiene el foco en el canvas
+        MenuController.setMuted(isMuted);
+        updateGameMuteIcon();
+        canvas.requestFocus();
     }
 
     @FXML
@@ -102,25 +99,18 @@ public class GameController implements Initializable {
                 updateMinScale();
             }
 
-            // --- CÓDIGO NUEVO PARA EL BOTÓN DE MUTE SIN TOCAR EL FXML ---
-            // Creamos el ImageView dinámicamente
             gameMuteIcon = new ImageView();
-            gameMuteIcon.setFitHeight(26.0); // Ajusta estas dimensiones si tu icono es diferente
-            gameMuteIcon.setFitWidth(33.0);  // Ajusta estas dimensiones si tu icono es diferente
+            gameMuteIcon.setFitHeight(26.0);
+            gameMuteIcon.setFitWidth(33.0);
             gameMuteIcon.setPickOnBounds(true);
             gameMuteIcon.setPreserveRatio(true);
 
-            // Asignamos el ImageView al botón de mute que sí se inyecta desde el FXML
             if (muteButton != null) {
                 muteButton.setGraphic(gameMuteIcon);
-                // Si quieres que el botón sea transparente como antes, también puedes forzar el estilo aquí
                 muteButton.setStyle("-fx-background-color: transparent;");
             } else {
                 System.err.println("Error: muteButton no fue inyectado. Asegúrate de que tu GameController-view.fxml tiene un Button con fx:id=\"muteButton\".");
             }
-            // -----------------------------------------------------------
-
-            // Establece la imagen correcta del icono de mute al inicio del juego.
             updateGameMuteIcon();
 
 
@@ -145,16 +135,14 @@ public class GameController implements Initializable {
         car1.start();
     }
 
-    // Método para actualizar la imagen del icono de mute en el juego
     private void updateGameMuteIcon() {
-        // Solo intenta cambiar la imagen si gameMuteIcon fue creado
         if (gameMuteIcon != null) {
             String iconPath = MenuController.isMuted() ? MUTE_ICON_PATH : UNMUTE_ICON_PATH;
             URL iconUrl = getClass().getResource(iconPath);
 
             if (iconUrl != null) {
                 Image iconImage = new Image(iconUrl.toExternalForm());
-                gameMuteIcon.setImage(iconImage); // Establece la imagen en el ImageView creado dinámicamente
+                gameMuteIcon.setImage(iconImage);
             } else {
                 System.err.println("Error: Icono de mute del juego no encontrado en " + iconPath + ". Revisa la ruta y la extensión.");
             }
@@ -223,7 +211,7 @@ public class GameController implements Initializable {
         if (canvas.getWidth() == 0 || canvas.getHeight() == 0) return;
 
         double scaleX = canvas.getWidth() / wallpaperWidth;
-        double scaleY = canvas.getHeight() / wallpaperHeight; // Corregido: Removed redundant division
+        double scaleY = canvas.getHeight() / wallpaperHeight;
         MIN_SCALE = Math.max(scaleX, scaleY);
 
         if (scaleFactor < MIN_SCALE) {
