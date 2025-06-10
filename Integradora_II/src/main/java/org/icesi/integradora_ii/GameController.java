@@ -160,7 +160,9 @@ public class GameController implements Initializable {
                 case D -> D_PRESSED = true;
                 case F -> {
                     Stage stage = (Stage) canvas.getScene().getWindow();
-                    stage.setFullScreen(!stage.isFullScreen());
+                    if (!stage.isFullScreen()) {
+                        stage.setFullScreen(true);
+                    }
                 }
                 default -> {}
             }

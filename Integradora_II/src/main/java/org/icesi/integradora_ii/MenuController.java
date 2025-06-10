@@ -1,5 +1,6 @@
 package org.icesi.integradora_ii;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,9 +10,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.application.Platform; // Importar Platform
 
 import java.io.IOException;
 import java.net.URL;
@@ -33,7 +34,6 @@ public class MenuController implements Initializable {
     private final String UNMUTE_ICON_PATH = "/Icons/unmute_icon.png";
     private final String MUTE_ICON_PATH = "/Icons/mute_icon.png";
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         String imageUrlPath = "/Background/menu_background.png";
@@ -48,6 +48,28 @@ public class MenuController implements Initializable {
         } else {
             System.err.println("Error: Imagen de fondo no encontrada en " + imageUrlPath + ". Revisa la ruta y la extensión.");
         }
+
+        // Cargar ícono del botón de volumen al inicio
+        updateMuteIcon();
+
+        // Activar detección de la tecla F para pantalla completa
+        Platform.runLater(() -> {
+            if (mainBorderPane.getScene() != null) {
+                mainBorderPane.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+                    switch (event.getCode()) {
+                        case F -> {
+                            Stage stage = (Stage) mainBorderPane.getScene().getWindow();
+                            if (!stage.isFullScreen()) {
+                                stage.setFullScreen(true);
+                            }
+                        }
+                        default -> {}
+                    }
+                });
+
+                mainBorderPane.requestFocus();
+            }
+        });
     }
 
     @FXML

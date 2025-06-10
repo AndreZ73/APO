@@ -52,7 +52,6 @@ public class    HelloApplication extends Application {
         } else {
             System.err.println("Error loading logo: /Logo/Logo.jpg. Make sure it's in src/main/resources/Logo/ and is a valid image.");
         }
-
         primaryStage.show();
     }
 
