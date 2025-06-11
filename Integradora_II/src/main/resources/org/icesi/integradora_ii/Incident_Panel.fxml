@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.icesi.integradora_ii.IncidentPanelController"
+            prefWidth="1024" prefHeight="600">
+
+    <!--  Barra superior con botón y contador  -->
+    <top>
+        <ToolBar BorderPane.alignment="CENTER">
+            <Button text="← Centro de Monitoreo" onAction="#handleBack"/>
+            <Separator orientation="VERTICAL"/>
+            <Label fx:id="counterLabel" text="Incidentes: 0"/>
+        </ToolBar>
+    </top>
+
+    <!--  Canvas central para dibujar incidentes  -->
+    <center>
+        <Canvas fx:id="incidentCanvas" width="1024" height="550"/>
+    </center>
+</BorderPane>

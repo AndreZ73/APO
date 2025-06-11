@@ -74,6 +74,14 @@ public class MenuController implements Initializable {
 
     @FXML
     public void EnterGame(ActionEvent event) {
+
+        try{
+            SceneController.getInstance().init(new Stage());
+            SceneController.getInstance().showMap();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        /*
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("GameController-view.fxml"));
             Scene gameScene = new Scene(fxmlLoader.<Parent>load());
@@ -85,7 +93,7 @@ public class MenuController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error loading GameController-view.fxml: " + e.getMessage());
-        }
+        }*/
     }
 
     @FXML

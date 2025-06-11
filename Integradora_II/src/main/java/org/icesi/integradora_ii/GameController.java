@@ -7,12 +7,17 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView; // Importar ImageView
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
 import model.Car1;
+import model.Incident; // Importar la clase Incident
+import model.IncidentManager; // Importar IncidentManager
+import model.IncidentSprite; // Importar IncidentSprite
 
 import java.net.URL;
+import java.util.HashMap; // Usaremos un HashMap para los sprites de incidentes
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
@@ -34,6 +39,7 @@ public class GameController implements Initializable {
     private boolean S_PRESSED = false;
     private boolean D_PRESSED = false;
 
+
     private double scaleFactor = 1.0;
     private final double SCALE_STEP = 0.1;
     private double MIN_SCALE = 0.5;
@@ -51,6 +57,8 @@ public class GameController implements Initializable {
     private final String UNMUTE_ICON_PATH = "/Icons/unmute_icon.png";
     private final String MUTE_ICON_PATH = "/Icons/mute_icon.png";
 
+    // COLECCIÓN PARA LOS SPRITES DE INCIDENTES
+    private HashMap<String, IncidentSprite> activeIncidentSprites; // Map<Incident ID, IncidentSprite>
 
     @FXML
     private void toggleMute() {
@@ -82,6 +90,14 @@ public class GameController implements Initializable {
         wallpaperHeight = wallpaper.getHeight();
 
         initEvents();
+
+        // Inicializar el HashMap de sprites de incidentes
+        activeIncidentSprites = new HashMap<>();
+
+        // Registrar este GameController como listener del IncidentManager
+        // Esto asume que IncidentManager tiene un mecanismo para notificar.
+        // Si no lo tiene, lo añadiremos en IncidentManager.
+        IncidentManager.getInstance().setGameController(this); // Necesitaremos un setter en IncidentManager
 
         Platform.runLater(() -> {
             if (canvas.getScene() != null) {
@@ -125,13 +141,14 @@ public class GameController implements Initializable {
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         System.err.println("Game loop interrupted: " + e.getMessage());
+                        // Si tienes un SimulationManager, también lo detendrías aquí.
                         break;
                     }
                 }
             }).start();
         });
 
-        car1 = new Car1(canvas, 176, 580, 50, 50);
+        car1 = new Car1(canvas, 176, 580, 50, 50); // Puedes usar una coordenada de un nodo del grafo
         car1.start();
     }
 
@@ -164,6 +181,11 @@ public class GameController implements Initializable {
                         stage.setFullScreen(true);
                     }
                 }
+                case Q -> {
+                    // Si tienes un SceneController, así se cambiaría de escena
+                    SceneController.getInstance().showIncidents();
+                }
+
                 default -> {}
             }
             canvas.requestFocus();
@@ -266,7 +288,40 @@ public class GameController implements Initializable {
         gc.save();
         gc.scale(scaleFactor, scaleFactor);
         gc.translate(-cameraX, -cameraY);
+
+        // Pinta el carro
         car1.paint();
+
+        // Pinta todos los sprites de incidentes activos
+        for (IncidentSprite sprite : activeIncidentSprites.values()) {
+            sprite.paint(gc);
+        }
+
         gc.restore();
+    }
+
+    // Métodos para que IncidentManager agregue/elimine incidentes
+    public void addIncidentToDisplay(Incident incident) {
+        IncidentSprite sprite = new IncidentSprite(incident);
+        activeIncidentSprites.put(incident.getId(), sprite);
+    }
+
+    public void removeIncidentFromDisplay(String incidentId) {
+        activeIncidentSprites.remove(incidentId);
+    }
+
+    // Puedes agregar un método para actualizar un incidente si cambia su estado
+    public void updateIncidentDisplay(Incident incident) {
+        IncidentSprite sprite = activeIncidentSprites.get(incident.getId());
+        if (sprite != null) {
+            sprite.setResolved(incident.isResolved());
+            // Si el sprite cambia su apariencia al resolverse, se actualizará en el siguiente paint.
+            // Si quieres que desaparezca inmediatamente, puedes llamar a removeIncidentFromDisplay aquí
+            // si incident.isResolved() es true. Pero el loop de remoción en IncidentManager es mejor para eso.
+        }
+    }
+
+    public Canvas getCanvas() {
+        return canvas;
     }
 }
