@@ -34,7 +34,10 @@ public class ManualViewer {
                             "Puedes cambiar entre las siguientes escenas:\n" +
                             "Centro de Monitoreo: Vista general del estado del sistema.\n" +
                             "Mapa de Tráfico: Vista del mapa 2D donde se ubican los vehículos e incidentes.\n" +
-                            "Panel de Incidentes: Lista de incidentes activos y herramientas para gestionarlos.\n\n" +
+                            "Panel de Incidentes: Lista de incidentes activos y herramientas para gestionarlos. (Q)\n" +
+                            "Para salir de la pantalla completa presiona ESC\n"+
+                            "Para activar pantalla completa presiona F\n"+
+                            "Para desactivar la música presiona el ícono en la esquina superior derecha \uD83D\uDD0A \n\n"+
                             "Tipos de Incidentes\n" +
                             "Los incidentes aparecerán aleatoriamente o como resultado del comportamiento de los vehículos:\n" +
                             "Accidentes de tráfico (basados en colisiones entre autómatas)\n" +
