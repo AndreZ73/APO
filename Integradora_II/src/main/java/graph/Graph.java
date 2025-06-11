@@ -22,100 +22,160 @@ public class Graph {
         return new ArrayList<>(nodes.values());
     }
 
+    // Este método addEdge ahora crea una ARISTA DIRIGIDA.
+    // Solo añade la arista de sourceId a targetId, no en ambas direcciones.
     public void addEdge(String sourceId, String targetId, double weight) {
         Node source = nodes.get(sourceId);
         Node target = nodes.get(targetId);
         if (source != null && target != null) {
-            source.addEdge(new Edge(target, weight));
-            target.addEdge(new Edge(source, weight));
+            source.addEdge(new Edge(target, weight)); // Solo añade la arista de source a target
+        } else {
+            System.err.println("Advertencia: No se pudo añadir arista. Nodo no encontrado: " + sourceId + " o " + targetId);
         }
     }
+
+    // ************************************************
+    // ¡NUEVO MÉTODO QUE FALTABA!
+    // Método para encontrar el nodo más cercano a una coordenada dada en el grafo
+    // ************************************************
+    public Node findNearestNode(int coordX, int coordY) {
+        Node nearest = null;
+        double minDist = Double.MAX_VALUE;
+        for (Node node : nodes.values()) { // Iterar sobre todos los nodos en el mapa
+            double dist = Math.sqrt(Math.pow(node.getX() - coordX, 2) + Math.pow(node.getY() - coordY, 2));
+            if (dist < minDist) {
+                minDist = dist;
+                nearest = node;
+            }
+        }
+        return nearest;
+    }
+
+
     private double calculateDistance(Node n1, Node n2) {
         return Math.sqrt(Math.pow(n1.getX() - n2.getX(), 2) + Math.pow(n1.getY() - n2.getY(), 2));
     }
+
     public void loadMapStructure() {
-        Node n1 = new Node("N1", 176, 580);
-        Node n2 = new Node("N2", 350, 580);
-        Node n3 = new Node("N3", 350, 450);
-        Node n4 = new Node("N4", 176, 450);
+        // Limpiar nodos existentes si se llama más de una vez
+        this.nodes.clear();
 
-        addNode(n1);
-        addNode(n2);
-        addNode(n3);
-        addNode(n4);
-
-        addEdge("N1", "N2", calculateDistance(n1, n2));
-        addEdge("N2", "N3", calculateDistance(n2, n3));
-        addEdge("N3", "N4", calculateDistance(n3, n4));
-        addEdge("N4", "N1", calculateDistance(n4, n1));
-
-        Node n_1_1 = getNode("N1"); // Already defined as N1
-        Node n_1_2 = getNode("N2"); // Already defined as N2
-        Node n_1_3 = new Node("N1_3", 520, 580);
-        Node n_1_4 = new Node("N1_4", 690, 580);
-        Node n_1_5 = new Node("N1_5", 860, 580);
-
-        addNode(n_1_3); addNode(n_1_4); addNode(n_1_5);
-        addEdge("N1_2", "N1_3", calculateDistance(n_1_2, n_1_3)); addEdge("N1_3", "N1_2", calculateDistance(n_1_3, n_1_2));
-        addEdge("N1_3", "N1_4", calculateDistance(n_1_3, n_1_4)); addEdge("N1_4", "N1_3", calculateDistance(n_1_4, n_1_3));
-        addEdge("N1_4", "N1_5", calculateDistance(n_1_4, n_1_5)); addEdge("N1_5", "N1_4", calculateDistance(n_1_5, n_1_4));
-
-        Node n_2_1 = getNode("N4");
-        Node n_2_2 = getNode("N3");
-        Node n_2_3 = new Node("N2_3", 520, 450);
-        Node n_2_4 = new Node("N2_4", 690, 450);
-        Node n_2_5 = new Node("N2_5", 860, 450);
-
-        addNode(n_2_3); addNode(n_2_4); addNode(n_2_5);
-        addEdge("N2_2", "N2_3", calculateDistance(n_2_2, n_2_3)); addEdge("N2_3", "N2_2", calculateDistance(n_2_3, n_2_2));
-        addEdge("N2_3", "N2_4", calculateDistance(n_2_3, n_2_4)); addEdge("N2_4", "N2_3", calculateDistance(n_2_4, n_2_3));
-        addEdge("N2_4", "N2_5", calculateDistance(n_2_4, n_2_5)); addEdge("N2_5", "N2_4", calculateDistance(n_2_5, n_2_4));
-
-        Node n_3_1 = new Node("N3_1", 176, 320);
-        Node n_3_2 = new Node("N3_2", 350, 320);
-        Node n_3_3 = new Node("N3_3", 520, 320);
-        Node n_3_4 = new Node("N3_4", 690, 320);
-        Node n_3_5 = new Node("N3_5", 860, 320);
-
-        addNode(n_3_1); addNode(n_3_2); addNode(n_3_3); addNode(n_3_4); addNode(n_3_5);
-        addEdge("N3_1", "N3_2", calculateDistance(n_3_1, n_3_2)); addEdge("N3_2", "N3_1", calculateDistance(n_3_2, n_3_1));
-        addEdge("N3_2", "N3_3", calculateDistance(n_3_2, n_3_3)); addEdge("N3_3", "N3_2", calculateDistance(n_3_3, n_3_2));
-        addEdge("N3_3", "N3_4", calculateDistance(n_3_3, n_3_4)); addEdge("N3_4", "N3_3", calculateDistance(n_3_4, n_3_3));
-        addEdge("N3_4", "N3_5", calculateDistance(n_3_4, n_3_5)); addEdge("N3_5", "N3_4", calculateDistance(n_3_5, n_3_4));
-
-        Node n_4_1 = new Node("N4_1", 176, 190);
-        Node n_4_2 = new Node("N4_2", 350, 190);
-        Node n_4_3 = new Node("N4_3", 520, 190);
-        Node n_4_4 = new Node("N4_4", 690, 190);
-        Node n_4_5 = new Node("N4_5", 860, 190);
-
-        addNode(n_4_1); addNode(n_4_2); addNode(n_4_3); addNode(n_4_4); addNode(n_4_5);
-        addEdge("N4_1", "N4_2", calculateDistance(n_4_1, n_4_2)); addEdge("N4_2", "N4_1", calculateDistance(n_4_2, n_4_1));
-        addEdge("N4_2", "N4_3", calculateDistance(n_4_2, n_4_3)); addEdge("N4_3", "N4_2", calculateDistance(n_4_3, n_4_2));
-        addEdge("N4_3", "N4_4", calculateDistance(n_4_3, n_4_4)); addEdge("N4_4", "N4_3", calculateDistance(n_4_4, n_4_3));
-        addEdge("N4_4", "N4_5", calculateDistance(n_4_4, n_4_5)); addEdge("N4_5", "N4_4", calculateDistance(n_4_5, n_4_4));
+        // Define los nodos con las coordenadas proporcionadas
+        Node nodeA = new Node("A", 55, 160);
+        Node nodeB = new Node("B", 415, 160);
+        Node nodeC = new Node("C", 415, 670);
+        Node nodeD = new Node("D", 415, 995);
+        Node nodeE = new Node("E", 55, 995);
+        Node nodeF = new Node("F", 1072, 670);
+        Node nodeG = new Node("G", 1072, 912);
+        Node nodeH = new Node("H", 1860, 912);
+        Node nodeI = new Node("I", 1860, 670);
+        Node nodeJ = new Node("J", 1860, 1);
+        Node nodeK = new Node("K", 1072, 1);
+        Node nodeL = new Node("L", 1072, 630);
+        Node nodeM = new Node("M", 455, 630);
+        Node nodeN = new Node("N", 1860, 630);
+        Node nodeO = new Node("O", 455, 120);
+        Node nodeP = new Node("P", 10, 120);
+        Node nodeQ = new Node("Q", 10, 1020);
+        Node nodeR = new Node("R", 455, 1020);
+        Node nodeS = new Node("S", 455, 670);
+        Node nodeT = new Node("T", 1112, 670);
+        Node nodeU = new Node("U", 1112, 41);
+        Node nodeV = new Node("V", 1820, 41);
+        Node nodeW = new Node("W", 1820,630 );
+        Node nodeX = new Node("X", 1112, 630);
+        Node nodeY = new Node("Y", 1820, 670);
+        Node nodeZ = new Node("Z", 1820, 872);
+        Node nodeAA = new Node("AA", 1112, 872);
 
 
-        // Vertical connections
-        addEdge("N1", "N4", calculateDistance(getNode("N1"), getNode("N4"))); addEdge("N4", "N1", calculateDistance(getNode("N4"), getNode("N1")));
-        addEdge("N2", "N3", calculateDistance(getNode("N2"), getNode("N3"))); addEdge("N3", "N2", calculateDistance(getNode("N3"), getNode("N2")));
+        // Añadir todos los nodos al grafo
+        addNode(nodeA);
+        addNode(nodeB);
+        addNode(nodeC);
+        addNode(nodeD);
+        addNode(nodeE);
+        addNode(nodeF);
+        addNode(nodeG);
+        addNode(nodeH);
+        addNode(nodeI);
+        addNode(nodeJ);
+        addNode(nodeK);
+        addNode(nodeL);
+        addNode(nodeM);
+        addNode(nodeN);
+        addNode(nodeO);
+        addNode(nodeP);
+        addNode(nodeQ);
+        addNode(nodeR);
+        addNode(nodeS);
+        addNode(nodeT);
+        addNode(nodeU);
+        addNode(nodeV);
+        addNode(nodeW);
+        addNode(nodeX);
+        addNode(nodeY);
+        addNode(nodeZ);
+        addNode(nodeAA);
 
-        addEdge("N1", "N3_1", calculateDistance(getNode("N1"), n_3_1)); addEdge("N3_1", "N1", calculateDistance(n_3_1, getNode("N1")));
-        addEdge("N2", "N3_2", calculateDistance(getNode("N2"), n_3_2)); addEdge("N3_2", "N2", calculateDistance(n_3_2, getNode("N2")));
-        addEdge("N1_3", "N3_3", calculateDistance(n_1_3, n_3_3)); addEdge("N3_3", "N1_3", calculateDistance(n_3_3, n_1_3));
-        addEdge("N1_4", "N3_4", calculateDistance(n_1_4, n_3_4)); addEdge("N3_4", "N1_4", calculateDistance(n_3_4, n_1_4));
-        addEdge("N1_5", "N3_5", calculateDistance(n_1_5, n_3_5)); addEdge("N3_5", "N1_5", calculateDistance(n_3_5, n_1_5));
+        // Definir las aristas (conexiones) según tu descripción de caminos dirigidos:
+        // "A va a B, B a C, C va a D o F, D va a E y E va a A, F va a G, G va a H, H va I o J y J va a K y K va a L"
 
-        addEdge("N4", "N3_1", calculateDistance(getNode("N4"), n_3_1)); addEdge("N3_1", "N4", calculateDistance(n_3_1, getNode("N4")));
-        addEdge("N3", "N3_2", calculateDistance(getNode("N3"), n_3_2)); addEdge("N3_2", "N3", calculateDistance(n_3_2, getNode("N3")));
-        addEdge("N2_3", "N3_3", calculateDistance(n_2_3, n_3_3)); addEdge("N3_3", "N2_3", calculateDistance(n_3_3, n_2_3));
-        addEdge("N2_4", "N3_4", calculateDistance(n_2_4, n_3_4)); addEdge("N3_4", "N2_4", calculateDistance(n_3_4, n_2_4));
-        addEdge("N2_5", "N3_5", calculateDistance(n_2_5, n_3_5)); addEdge("N3_5", "N2_5", calculateDistance(n_3_5, n_2_5));
+        // A va a B
+        addEdge("A", "B", calculateDistance(nodeA, nodeB));
 
-        addEdge("N3_1", "N4_1", calculateDistance(n_3_1, n_4_1)); addEdge("N4_1", "N3_1", calculateDistance(n_4_1, n_3_1));
-        addEdge("N3_2", "N4_2", calculateDistance(n_3_2, n_4_2)); addEdge("N4_2", "N3_2", calculateDistance(n_4_2, n_3_2));
-        addEdge("N3_3", "N4_3", calculateDistance(n_3_3, n_4_3)); addEdge("N4_3", "N3_3", calculateDistance(n_4_3, n_3_3));
-        addEdge("N3_4", "N4_4", calculateDistance(n_3_4, n_4_4)); addEdge("N4_4", "N3_4", calculateDistance(n_4_4, n_3_4));
-        addEdge("N3_5", "N4_5", calculateDistance(n_3_5, n_4_5)); addEdge("N4_5", "N3_5", calculateDistance(n_4_5, n_3_5));
+        // B a C
+        addEdge("B", "C", calculateDistance(nodeB, nodeC));
+
+        // C va a D o F
+        addEdge("C", "D", calculateDistance(nodeC, nodeD));
+        addEdge("C", "F", calculateDistance(nodeC, nodeF));
+
+        // D va a E
+        addEdge("D", "E", calculateDistance(nodeD, nodeE));
+
+        // E va a A
+        addEdge("E", "A", calculateDistance(nodeE, nodeA));
+
+        // F va a G
+        addEdge("F", "G", calculateDistance(nodeF, nodeG));
+
+        // G va a H
+        addEdge("G", "H", calculateDistance(nodeG, nodeH));
+
+        // H va I o J
+        addEdge("H", "I", calculateDistance(nodeH, nodeI));
+        addEdge("H", "J", calculateDistance(nodeH, nodeJ));
+
+        // J va a K
+        addEdge("J", "K", calculateDistance(nodeJ, nodeK));
+
+        // K va a L
+        addEdge("K", "L", calculateDistance(nodeK, nodeL));
+
+        addEdge("L", "F", calculateDistance(nodeK, nodeL));
+        addEdge("I", "N", calculateDistance(nodeK, nodeL));
+        addEdge("N", "M", calculateDistance(nodeK, nodeL));
+        addEdge("N", "L", calculateDistance(nodeK, nodeL));
+        addEdge("L", "M", calculateDistance(nodeK, nodeL));
+        addEdge("M", "O", calculateDistance(nodeK, nodeL));
+        addEdge("O", "P", calculateDistance(nodeK, nodeL));
+        addEdge("P", "Q", calculateDistance(nodeK, nodeL));
+        addEdge("Q", "R", calculateDistance(nodeK, nodeL));
+        addEdge("R", "S", calculateDistance(nodeK, nodeL));
+        addEdge("S", "F", calculateDistance(nodeK, nodeL));
+        addEdge("F", "T", calculateDistance(nodeK, nodeL));
+        addEdge("T", "U", calculateDistance(nodeK, nodeL));
+        addEdge("T", "I", calculateDistance(nodeK, nodeL));
+        addEdge("U", "V", calculateDistance(nodeK, nodeL));
+        addEdge("V", "W", calculateDistance(nodeK, nodeL));
+
+        addEdge("W", "X", calculateDistance(nodeK, nodeL));
+        addEdge("X", "L", calculateDistance(nodeK, nodeL));
+        addEdge("W", "Y", calculateDistance(nodeK, nodeL));
+        addEdge("Y", "Z", calculateDistance(nodeK, nodeL));
+        addEdge("Z", "AA", calculateDistance(nodeK, nodeL));
+        addEdge("AA", "T", calculateDistance(nodeK, nodeL));
     }
 }

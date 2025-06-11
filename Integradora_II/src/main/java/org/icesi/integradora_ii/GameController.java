@@ -8,15 +8,21 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.Car1;
-import model.Incident; // Importar la clase Incident
-import model.IncidentManager; // Importar IncidentManager
-import model.IncidentSprite; // Importar IncidentSprite
+import model.Incident;
+import model.IncidentManager;
+import model.IncidentSprite;
+import graph.Graph;
+import graph.Node;
+import graph.Edge;
 
 import java.net.URL;
-import java.util.HashMap; // Usaremos un HashMap para los sprites de incidentes
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -39,12 +45,12 @@ public class GameController implements Initializable {
     private boolean S_PRESSED = false;
     private boolean D_PRESSED = false;
 
-
     private double scaleFactor = 1.0;
     private final double SCALE_STEP = 0.1;
     private double MIN_SCALE = 0.5;
 
     private Car1 car1;
+    private Graph mapGraph;
 
     @FXML
     private Button muteButton;
@@ -57,8 +63,7 @@ public class GameController implements Initializable {
     private final String UNMUTE_ICON_PATH = "/Icons/unmute_icon.png";
     private final String MUTE_ICON_PATH = "/Icons/mute_icon.png";
 
-    // COLECCIÓN PARA LOS SPRITES DE INCIDENTES
-    private HashMap<String, IncidentSprite> activeIncidentSprites; // Map<Incident ID, IncidentSprite>
+    private HashMap<String, IncidentSprite> activeIncidentSprites;
 
     @FXML
     private void toggleMute() {
@@ -81,7 +86,7 @@ public class GameController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         gc = canvas.getGraphicsContext2D();
 
-        wallpaper = new Image(getClass().getResourceAsStream("/Background/map.png"));
+        wallpaper = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/Background/map.png")));
         if (wallpaper.isError()) {
             System.err.println("Error loading map.png: " + wallpaper.getException());
         }
@@ -89,15 +94,14 @@ public class GameController implements Initializable {
         wallpaperWidth = wallpaper.getWidth();
         wallpaperHeight = wallpaper.getHeight();
 
-        initEvents();
+        mapGraph = new Graph();
+        mapGraph.loadMapStructure();
 
-        // Inicializar el HashMap de sprites de incidentes
         activeIncidentSprites = new HashMap<>();
 
-        // Registrar este GameController como listener del IncidentManager
-        // Esto asume que IncidentManager tiene un mecanismo para notificar.
-        // Si no lo tiene, lo añadiremos en IncidentManager.
-        IncidentManager.getInstance().setGameController(this); // Necesitaremos un setter en IncidentManager
+        IncidentManager.getInstance().setGameController(this);
+
+        initEvents();
 
         Platform.runLater(() -> {
             if (canvas.getScene() != null) {
@@ -129,7 +133,6 @@ public class GameController implements Initializable {
             }
             updateGameMuteIcon();
 
-
             new Thread(() -> {
                 while (true) {
                     try {
@@ -141,14 +144,13 @@ public class GameController implements Initializable {
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         System.err.println("Game loop interrupted: " + e.getMessage());
-                        // Si tienes un SimulationManager, también lo detendrías aquí.
                         break;
                     }
                 }
             }).start();
         });
 
-        car1 = new Car1(canvas, 176, 580, 50, 50); // Puedes usar una coordenada de un nodo del grafo
+        car1 = new Car1(canvas, 176, 580, 50, 50, mapGraph);
         car1.start();
     }
 
@@ -182,11 +184,10 @@ public class GameController implements Initializable {
                     }
                 }
                 case Q -> {
-                    // Si tienes un SceneController, así se cambiaría de escena
                     SceneController.getInstance().showIncidents();
                 }
-
-                default -> {}
+                default -> {
+                }
             }
             canvas.requestFocus();
             event.consume();
@@ -198,36 +199,25 @@ public class GameController implements Initializable {
                 case A -> A_PRESSED = false;
                 case S -> S_PRESSED = false;
                 case D -> D_PRESSED = false;
-                default -> {}
+                default -> {
+                }
             }
             event.consume();
         });
 
-        canvas.setOnScroll((ScrollEvent event) -> {
-            double mouseX = event.getX();
-            double mouseY = event.getY();
+        canvas.setOnScroll(this::handleScroll);
 
-            double mouseMapX = cameraX + mouseX / scaleFactor;
-            double mouseMapY = cameraY + mouseY / scaleFactor;
+        canvas.setOnMouseClicked(event -> {
+            double mapX = cameraX + (event.getX() / scaleFactor);
+            double mapY = cameraY + (event.getY() / scaleFactor);
 
-            if (event.getDeltaY() > 0) {
-                scaleFactor += SCALE_STEP;
-            } else {
-                scaleFactor -= SCALE_STEP;
+            System.out.println("Clicked at map coordinates: X=" + mapX + ", Y=" + mapY);
+
+            Node clickedNode = mapGraph.findNearestNode((int) mapX, (int) mapY);
+            if (clickedNode != null) {
+                System.out.println("Nearest node to click: " + clickedNode.getId());
             }
-
-            scaleFactor = Math.max(MIN_SCALE, scaleFactor);
-
-            double maxScaleX = wallpaperWidth / canvas.getWidth();
-            double maxScaleY = wallpaperHeight / canvas.getHeight();
-            double maxScale = Math.min(maxScaleX, maxScaleY);
-            scaleFactor = Math.min(scaleFactor, maxScale * 2);
-
-            cameraX = mouseMapX - (mouseX / scaleFactor);
-            cameraY = mouseMapY - (mouseY / scaleFactor);
-
-            constrainCamera();
-            event.consume();
+            canvas.requestFocus();
         });
     }
 
@@ -273,6 +263,33 @@ public class GameController implements Initializable {
         }
     }
 
+    private void handleScroll(ScrollEvent event) {
+        double mouseX = event.getX();
+        double mouseY = event.getY();
+
+        double mouseMapX = cameraX + mouseX / scaleFactor;
+        double mouseMapY = cameraY + mouseY / scaleFactor;
+
+        if (event.getDeltaY() > 0) {
+            scaleFactor += SCALE_STEP;
+        } else {
+            scaleFactor -= SCALE_STEP;
+        }
+
+        scaleFactor = Math.max(MIN_SCALE, scaleFactor);
+
+        double maxScaleX = wallpaperWidth / canvas.getWidth();
+        double maxScaleY = wallpaperHeight / canvas.getHeight();
+        double maxScale = Math.max(maxScaleX, maxScaleY);
+        scaleFactor = Math.min(scaleFactor, maxScale * 2);
+
+        cameraX = mouseMapX - (mouseX / scaleFactor);
+        cameraY = mouseMapY - (mouseY / scaleFactor);
+
+        constrainCamera();
+        event.consume();
+    }
+
     private void paintGame() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
@@ -289,10 +306,8 @@ public class GameController implements Initializable {
         gc.scale(scaleFactor, scaleFactor);
         gc.translate(-cameraX, -cameraY);
 
-        // Pinta el carro
         car1.paint();
 
-        // Pinta todos los sprites de incidentes activos
         for (IncidentSprite sprite : activeIncidentSprites.values()) {
             sprite.paint(gc);
         }
@@ -300,7 +315,6 @@ public class GameController implements Initializable {
         gc.restore();
     }
 
-    // Métodos para que IncidentManager agregue/elimine incidentes
     public void addIncidentToDisplay(Incident incident) {
         IncidentSprite sprite = new IncidentSprite(incident);
         activeIncidentSprites.put(incident.getId(), sprite);
@@ -310,14 +324,10 @@ public class GameController implements Initializable {
         activeIncidentSprites.remove(incidentId);
     }
 
-    // Puedes agregar un método para actualizar un incidente si cambia su estado
     public void updateIncidentDisplay(Incident incident) {
         IncidentSprite sprite = activeIncidentSprites.get(incident.getId());
         if (sprite != null) {
             sprite.setResolved(incident.isResolved());
-            // Si el sprite cambia su apariencia al resolverse, se actualizará en el siguiente paint.
-            // Si quieres que desaparezca inmediatamente, puedes llamar a removeIncidentFromDisplay aquí
-            // si incident.isResolved() es true. Pero el loop de remoción en IncidentManager es mejor para eso.
         }
     }
 
