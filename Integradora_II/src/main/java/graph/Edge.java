@@ -1,7 +1,7 @@
 package graph;
 
 public class Edge {
-    private Node target; // El nodo al que esta arista se dirige
+    private Node target;
     private double weight;
 
     public Edge(Node target, double weight) {
@@ -20,7 +20,7 @@ public class Edge {
     @Override
     public String toString() {
         return "Edge{" +
-                "target=" + target.getId() + // Mostrar solo el ID del target para evitar recursión infinita
+                "target=" + target.getId() +
                 ", weight=" + String.format("%.2f", weight) +
             '}';
     }

@@ -22,26 +22,20 @@ public class Graph {
         return new ArrayList<>(nodes.values());
     }
 
-    // Este método addEdge ahora crea una ARISTA DIRIGIDA.
-    // Solo añade la arista de sourceId a targetId, no en ambas direcciones.
     public void addEdge(String sourceId, String targetId, double weight) {
         Node source = nodes.get(sourceId);
         Node target = nodes.get(targetId);
         if (source != null && target != null) {
-            source.addEdge(new Edge(target, weight)); // Solo añade la arista de source a target
+            source.addEdge(new Edge(target, weight));
         } else {
             System.err.println("Advertencia: No se pudo añadir arista. Nodo no encontrado: " + sourceId + " o " + targetId);
         }
     }
 
-    // ************************************************
-    // ¡NUEVO MÉTODO QUE FALTABA!
-    // Método para encontrar el nodo más cercano a una coordenada dada en el grafo
-    // ************************************************
     public Node findNearestNode(int coordX, int coordY) {
         Node nearest = null;
         double minDist = Double.MAX_VALUE;
-        for (Node node : nodes.values()) { // Iterar sobre todos los nodos en el mapa
+        for (Node node : nodes.values()) {
             double dist = Math.sqrt(Math.pow(node.getX() - coordX, 2) + Math.pow(node.getY() - coordY, 2));
             if (dist < minDist) {
                 minDist = dist;
@@ -57,10 +51,10 @@ public class Graph {
     }
 
     public void loadMapStructure() {
-        // Limpiar nodos existentes si se llama más de una vez
+
         this.nodes.clear();
 
-        // Define los nodos con las coordenadas proporcionadas
+
         Node nodeA = new Node("A", 55, 160);
         Node nodeB = new Node("B", 415, 160);
         Node nodeC = new Node("C", 415, 670);
@@ -91,12 +85,16 @@ public class Graph {
         Node nodeAB = new Node("AB", 55, 490);
         Node nodeAC = new Node("AC", 105, 410);
         Node nodeAD = new Node("AD", 415, 630);
+        //accidentes
         Node nodeAE = new Node("AE", 370, 80);
         Node nodeAF = new Node("AF", 1, 80);
         Node nodeAG = new Node("AG", 1432, 85);
-        Node nodeAH = new Node("AH", 1549, 560);
+        Node nodeAH = new Node("AH", 1549, 600);
         Node nodeAI = new Node("AI", 1285, 705);
-        Node nodeAJ = new Node("AJ", 779, 705);
+        //no acciendetes
+        Node nodeAK= new Node("AK", 198, 590);
+        Node nodeAL= new Node("AL", 55, 590);
+        Node nodeAM= new Node("AM", 10, 590);
 
 
 
@@ -135,28 +133,33 @@ public class Graph {
         addNode(nodeAG);
         addNode(nodeAH);
         addNode(nodeAI);
-        addNode(nodeAJ);
+        addNode(nodeAK);
+        addNode(nodeAL);
+        addNode(nodeAM);
 
 
+        // A va a B
         addEdge("A", "B", calculateDistance(nodeA, nodeB));
 
-
+        // B a C
         addEdge("B", "C", calculateDistance(nodeB, nodeC));
 
-
+        // C va a D o F
         addEdge("C", "D", calculateDistance(nodeC, nodeD));
         addEdge("C", "F", calculateDistance(nodeC, nodeF));
 
-
+        // D va a E
         addEdge("D", "E", calculateDistance(nodeD, nodeE));
 
 
 
+        // F va a G
         addEdge("F", "G", calculateDistance(nodeF, nodeG));
 
-
+        // G va a H
         addEdge("G", "H", calculateDistance(nodeG, nodeH));
 
+        // H va I o J
         addEdge("H", "I", calculateDistance(nodeH, nodeI));
         addEdge("H", "J", calculateDistance(nodeH, nodeJ));
 
@@ -199,24 +202,12 @@ public class Graph {
         addEdge("P", "AF", calculateDistance(nodeK, nodeL));
         addEdge("U", "AG", calculateDistance(nodeK, nodeL));
         addEdge("N", "AH", calculateDistance(nodeK, nodeL));
+        addEdge("S", "I", calculateDistance(nodeK, nodeL));
+        addEdge("S", "T", calculateDistance(nodeK, nodeL));
         addEdge("T", "AI", calculateDistance(nodeK, nodeL));
-        addEdge("S", "AJ", calculateDistance(nodeK, nodeL));
-
-
-
-    }
-
-    public Node findNearestNode(double x, double y) {
-        Node nearest = null;
-        double minDistanceSq = Double.MAX_VALUE; // Cuadrado de la distancia para evitar Math.sqrt repetidamente
-
-        for (Node node : nodes.values()) {
-            double distSq = Math.pow(node.getX() - x, 2) + Math.pow(node.getY() - y, 2);
-            if (distSq < minDistanceSq) {
-                minDistanceSq = distSq;
-                nearest = node;
-            }
-        }
-        return nearest;
+        addEdge("AK", "AL", calculateDistance(nodeK, nodeL));
+        addEdge("AL", "A", calculateDistance(nodeK, nodeL));
+        addEdge("AK", "AM", calculateDistance(nodeK, nodeL));
+        addEdge("AM", "Q", calculateDistance(nodeK, nodeL));
     }
 }

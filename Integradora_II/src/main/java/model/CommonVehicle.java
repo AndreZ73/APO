@@ -23,6 +23,7 @@ public class CommonVehicle extends Thread {
     private int w;
     private int h;
     private int speed;
+    private boolean accident;
 
     private int state;
 
@@ -48,7 +49,8 @@ public class CommonVehicle extends Thread {
         this.w = w;
         this.h = h;
         this.state = 0;
-        this.speed = 6;
+        this.speed = 2;
+        this.accident = false;
 
         String basePath;
         String vehicleNameWithColor;
@@ -138,7 +140,6 @@ public class CommonVehicle extends Thread {
                 if (targetNode == null) {
                     chooseNextNode();
                     if (targetNode == null) {
-                        System.out.println("Vehicle at node " + (currentNode != null ? currentNode.getId() : "null") + " with no target. Possibly stuck. Waiting...");
                         sleepMillis(500);
                         continue;
                     }
@@ -191,7 +192,6 @@ public class CommonVehicle extends Thread {
         List<Edge> possibleEdges = currentNode.getEdges();
 
         if (possibleEdges.isEmpty()) {
-            System.out.println("Node " + currentNode.getId() + " has no outgoing edges. Vehicle stopped.");
             targetNode = null;
             return;
         }

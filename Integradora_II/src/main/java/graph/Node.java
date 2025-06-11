@@ -46,7 +46,7 @@ public class Node implements Comparable<Node> {
         return edges;
     }
 
-    // --- Métodos getter/setter para Dijkstra ---
+
     public double getDistance() {
         return distance;
     }
@@ -71,14 +71,12 @@ public class Node implements Comparable<Node> {
         this.visited = visited;
     }
 
-    // Método para resetear el estado del nodo antes de una nueva ejecución de Dijkstra
     public void resetForDijkstra() {
         this.distance = Double.POSITIVE_INFINITY;
         this.previous = null;
         this.visited = false;
     }
 
-    // Implementación de compareTo para la PriorityQueue (necesario si se usa Dijkstra)
     @Override
     public int compareTo(Node other) {
         return Double.compare(this.distance, other.distance);

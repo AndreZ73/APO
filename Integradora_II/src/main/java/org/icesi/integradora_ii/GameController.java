@@ -48,6 +48,7 @@ public class GameController implements Initializable {
     private CommonVehicle sport;
     private CommonVehicle luxury;
     private CommonVehicle supercar;
+    private EmergencyVehicle police;
 
     private Graph mapGraph;
 
@@ -149,14 +150,19 @@ public class GameController implements Initializable {
             }).start();
         });
 
-        supercar = new CommonVehicle(canvas, 176, 580, 50, 50, mapGraph, CarType.SUPERCAR);
+        supercar = new CommonVehicle(canvas, 55, 160, 50, 50, mapGraph, CarType.SUPERCAR);
         supercar.start();
 
-        sport = new CommonVehicle(canvas, 176, 580, 50, 50, mapGraph, CarType.SPORT);
+        sport = new CommonVehicle(canvas, 1072, 912, 50, 50, mapGraph, CarType.SPORT);
         sport.start();
 
-        luxury = new CommonVehicle(canvas, 176, 580, 50, 50, mapGraph, CarType.LUXURY);
+        luxury = new CommonVehicle(canvas, 1820, 41, 50, 50, mapGraph, CarType.LUXURY);
         luxury.start();
+
+        police = new EmergencyVehicle(canvas, 198, 590, 50, 50, mapGraph, CarType.POLICE);
+        police.start();
+
+
     }
 
     private void updateGameMuteIcon() {
@@ -314,6 +320,7 @@ public class GameController implements Initializable {
         sport.paint();
         supercar.paint();
         luxury.paint();
+        police.paint();
 
         for (IncidentSprite sprite : activeIncidentSprites.values()) {
             sprite.paint(gc);

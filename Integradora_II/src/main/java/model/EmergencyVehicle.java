@@ -133,53 +133,7 @@ public class EmergencyVehicle extends Thread {
 
     @Override
     public void run() {
-        try {
-            while (!Thread.currentThread().isInterrupted()) {
-                if (targetNode == null) {
-                    chooseNextNode();
-                    if (targetNode == null) {
-                        System.out.println("Vehicle at node " + (currentNode != null ? currentNode.getId() : "null") + " with no target. Possibly stuck. Waiting...");
-                        sleepMillis(500);
-                        continue;
-                    }
-                }
-
-                double dx = targetNode.getX() - x;
-                double dy = targetNode.getY() - y;
-                double distance = Math.sqrt(dx * dx + dy * dy);
-
-                double arrivalThreshold = speed;
-                while (distance > arrivalThreshold && !Thread.currentThread().isInterrupted()) {
-                    double ratio = speed / distance;
-                    x += dx * ratio;
-                    y += dy * ratio;
-
-                    updateCarState(dx, dy);
-                    sleepMillis(10);
-
-                    dx = targetNode.getX() - x;
-                    dy = targetNode.getY() - y;
-                    distance = Math.sqrt(dx * dx + dy * dy);
-                }
-
-                x = (int) targetNode.getX();
-                y = (int) targetNode.getY();
-                currentNode = targetNode;
-                targetNode = null;
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            System.err.println("The EmergencyVehicle thread was interrupted: " + e.getMessage());
-        } catch (Exception e) {
-            System.err.println("Unexpected error in EmergencyVehicle thread: " + e.getMessage());
-            e.printStackTrace();
-            try {
-                sleepMillis(500);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-            }
-        }
-        System.out.println("EmergencyVehicle thread terminated.");
+        state = 3;
     }
 
     private void chooseNextNode() {
@@ -191,7 +145,6 @@ public class EmergencyVehicle extends Thread {
         List<Edge> possibleEdges = currentNode.getEdges();
 
         if (possibleEdges.isEmpty()) {
-            System.out.println("Node " + currentNode.getId() + " has no outgoing edges. Vehicle stopped.");
             targetNode = null;
             return;
         }
