@@ -14,7 +14,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -49,10 +48,8 @@ public class MenuController implements Initializable {
             System.err.println("Error: Imagen de fondo no encontrada en " + imageUrlPath + ". Revisa la ruta y la extensión.");
         }
 
-        // Cargar ícono del botón de volumen al inicio
         updateMuteIcon();
 
-        // Activar detección de la tecla F para pantalla completa
         Platform.runLater(() -> {
             if (mainBorderPane.getScene() != null) {
                 mainBorderPane.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
@@ -84,19 +81,6 @@ public class MenuController implements Initializable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        /*
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("GameController-view.fxml"));
-            Scene gameScene = new Scene(fxmlLoader.<Parent>load());
-
-            Stage currentStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-            currentStage.setScene(gameScene);
-            currentStage.setTitle("SGMMS - Game");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Error loading GameController-view.fxml: " + e.getMessage());
-        }*/
     }
 
     @FXML

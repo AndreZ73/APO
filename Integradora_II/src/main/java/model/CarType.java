@@ -1,5 +1,6 @@
 package model;
 
 public enum CarType {
-    AMBULANCE, POLICE, FIRETRUCK;
+    AMBULANCE, POLICE, FIRETRUCK,
+    SUPERCAR, SPORT, LUXURY;
 }

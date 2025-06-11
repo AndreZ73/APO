@@ -45,9 +45,10 @@ public class GameController implements Initializable {
     private final double SCALE_STEP = 0.1;
     private double MIN_SCALE = 0.5;
 
-    private EmergencyVehicle ambulance;
-    private EmergencyVehicle fireTruck;
-    private EmergencyVehicle police;
+    private CommonVehicle sport;
+    private CommonVehicle luxury;
+    private CommonVehicle supercar;
+
     private Graph mapGraph;
 
     @FXML
@@ -148,14 +149,14 @@ public class GameController implements Initializable {
             }).start();
         });
 
-        ambulance = new EmergencyVehicle(canvas, 176, 580, 50, 50, mapGraph, CarType.AMBULANCE);
-        ambulance.start();
+        supercar = new CommonVehicle(canvas, 176, 580, 50, 50, mapGraph, CarType.SUPERCAR);
+        supercar.start();
 
-        police = new EmergencyVehicle(canvas, 176, 580, 50, 50, mapGraph, CarType.POLICE);
-        police.start();
+        sport = new CommonVehicle(canvas, 176, 580, 50, 50, mapGraph, CarType.SPORT);
+        sport.start();
 
-        fireTruck = new EmergencyVehicle(canvas, 176, 580, 50, 50, mapGraph, CarType.FIRETRUCK);
-        fireTruck.start();
+        luxury = new CommonVehicle(canvas, 176, 580, 50, 50, mapGraph, CarType.LUXURY);
+        luxury.start();
     }
 
     private void updateGameMuteIcon() {
@@ -310,9 +311,9 @@ public class GameController implements Initializable {
         gc.scale(scaleFactor, scaleFactor);
         gc.translate(-cameraX, -cameraY);
 
-        ambulance.paint();
-        police.paint();
-        fireTruck.paint();
+        sport.paint();
+        supercar.paint();
+        luxury.paint();
 
         for (IncidentSprite sprite : activeIncidentSprites.values()) {
             sprite.paint(gc);

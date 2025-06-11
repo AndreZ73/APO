@@ -51,25 +51,25 @@ public class CommonVehicle extends Thread {
         this.speed = 6;
 
         String basePath;
-        String vehicleName;
+        String vehicleNameWithColor;
 
         switch (type) {
-            case POLICE:
-                basePath = "/EmergencyVehicles/Police/";
-                vehicleName = "POLICE";
+            case SUPERCAR:
+                basePath = "/CommonVehicles/Supercar/";
+                vehicleNameWithColor = "Black_SUPERCAR";
                 break;
-            case AMBULANCE:
-                basePath = "/EmergencyVehicles/Ambulance/";
-                vehicleName = "AMBULANCE";
+            case SPORT:
+                basePath = "/CommonVehicles/SPORT/";
+                vehicleNameWithColor = "Red_SPORT";
                 break;
-            case FIRETRUCK:
-                basePath = "/EmergencyVehicles/FireTruck/";
-                vehicleName = "Red_CAMPER";
+            case LUXURY:
+                basePath = "/CommonVehicles/LUXURY/";
+                vehicleNameWithColor = "White_LUXURY";
                 break;
             default:
-                basePath = "/EmergencyVehicles/Police/";
-                vehicleName = "POLICE";
-                System.err.println("Warning: Unknown CarType, defaulting to Police images.");
+                basePath = "/CommonVehicles/Supercar/";
+                vehicleNameWithColor = "Black_SUPERCAR";
+                System.err.println("Warning: Unknown CarType, defaulting to Black_SUPERCAR images.");
                 break;
         }
 
@@ -78,18 +78,18 @@ public class CommonVehicle extends Thread {
         east = new ArrayList<>();
         south = new ArrayList<>();
 
-        // Load animated sprites for cardinal directions
         for (int i = 0; i < 11; i++) {
-            loadAndAddImage(north, String.format(basePath + "North/%s_CLEAN_NORTH_%03d.png", vehicleName, i));
-            loadAndAddImage(west, String.format(basePath + "West/%s_CLEAN_WEST_%03d.png", vehicleName, i));
-            loadAndAddImage(east, String.format(basePath + "East/%s_CLEAN_EAST_%03d.png", vehicleName, i));
-            loadAndAddImage(south, String.format(basePath + "South/%s_CLEAN_SOUTH_%03d.png", vehicleName, i));
-
-            NE = loadImage(basePath + vehicleName + "_CLEAN_NORTHEAST_000.png");
-            NW = loadImage(basePath + vehicleName + "_CLEAN_NORTHWEST_000.png");
-            SE = loadImage(basePath + vehicleName + "_CLEAN_SOUTHEAST_000.png");
-            SW = loadImage(basePath + vehicleName + "_CLEAN_SOUTHWEST_000.png");
+            loadAndAddImage(north, String.format(basePath + "North/%s_CLEAN_NORTH_%03d.png", vehicleNameWithColor, i));
+            loadAndAddImage(west, String.format(basePath + "West/%s_CLEAN_WEST_%03d.png", vehicleNameWithColor, i));
+            loadAndAddImage(east, String.format(basePath + "East/%s_CLEAN_EAST_%03d.png", vehicleNameWithColor, i));
+            loadAndAddImage(south, String.format(basePath + "South/%s_CLEAN_SOUTH_%03d.png", vehicleNameWithColor, i));
         }
+
+        NE = loadImage(String.format(basePath + "%s_CLEAN_NORTHEAST_000.png", vehicleNameWithColor));
+        NW = loadImage(String.format(basePath + "%s_CLEAN_NORTHWEST_000.png", vehicleNameWithColor));
+        SE = loadImage(String.format(basePath + "%s_CLEAN_SOUTHEAST_000.png", vehicleNameWithColor));
+        SW = loadImage(String.format(basePath + "%s_CLEAN_SOUTHWEST_000.png", vehicleNameWithColor));
+
 
         this.mapGraph = mapGraph;
         this.currentNode = mapGraph.findNearestNode(x, y);
@@ -111,7 +111,7 @@ public class CommonVehicle extends Thread {
     }
 
     private Image loadImage(String path) {
-        InputStream is = EmergencyVehicle.class.getResourceAsStream(path);
+        InputStream is = CommonVehicle.class.getResourceAsStream(path);
         if (is == null) {
             System.err.println("ERROR! Could not find image resource: " + path);
             return null;
@@ -169,9 +169,9 @@ public class CommonVehicle extends Thread {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.err.println("The EmergencyVehicle thread was interrupted: " + e.getMessage());
+            System.err.println("The CommonVehicle thread was interrupted: " + e.getMessage());
         } catch (Exception e) {
-            System.err.println("Unexpected error in EmergencyVehicle thread: " + e.getMessage());
+            System.err.println("Unexpected error in CommonVehicle thread: " + e.getMessage());
             e.printStackTrace();
             try {
                 sleepMillis(500);
@@ -179,7 +179,7 @@ public class CommonVehicle extends Thread {
                 Thread.currentThread().interrupt();
             }
         }
-        System.out.println("EmergencyVehicle thread terminated.");
+        System.out.println("CommonVehicle thread terminated.");
     }
 
     private void chooseNextNode() {

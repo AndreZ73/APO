@@ -5,7 +5,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.scene.layout.Priority; // Importar Priority
+import javafx.scene.layout.Priority;
 
 public class ManualViewer {
 
@@ -62,9 +62,7 @@ public class ManualViewer {
                             "Recomendaciones Estratégicas:\n" +
                             "Prioriza los incidentes de mayor gravedad.\n" +
                             "Usa los vehículos más rápidos para los casos urgentes.\n" +
-                            "Revisa constantemente el Centro de Monitoreo para tomar decisiones globales.\n\n" +
-                            "Soporte:\n" +
-                            "Si experimentas errores o deseas reiniciar la simulación, accede al botón “Reiniciar” desde el menú principal."
+                            "Revisa constantemente el Centro de Monitoreo para tomar decisiones globales.\n\n"
             );
 
             ScrollPane scrollPane = new ScrollPane(manualContent);

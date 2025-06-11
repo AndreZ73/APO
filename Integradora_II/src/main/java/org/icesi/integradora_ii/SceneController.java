@@ -20,9 +20,8 @@ public class SceneController {
     public void init(Stage primaryStage) {
         this.stage = primaryStage;
         try {
-            //monitoringScene = loadScene("/org/example/sgmms/view/monitoring_center.fxml");
-            mapScene        = loadScene("GameController-view.fxml");
-            incidentScene   = loadScene("Incident_Panel.fxml");
+            mapScene = loadScene("GameController-view.fxml");
+            incidentScene = loadScene("Incident_Panel.fxml");
         } catch (Exception e) {
             throw new RuntimeException("No se pudieron cargar las vistas", e);
         }
