@@ -88,9 +88,18 @@ public class Graph {
         Node nodeY = new Node("Y", 1820, 670);
         Node nodeZ = new Node("Z", 1820, 872);
         Node nodeAA = new Node("AA", 1112, 872);
+        Node nodeAB = new Node("AB", 55, 490);
+        Node nodeAC = new Node("AC", 105, 410);
+        Node nodeAD = new Node("AD", 415, 630);
+        Node nodeAE = new Node("AE", 370, 80);
+        Node nodeAF = new Node("AF", 1, 80);
+        Node nodeAG = new Node("AG", 1432, 85);
+        Node nodeAH = new Node("AH", 1549, 560);
+        Node nodeAI = new Node("AI", 1285, 705);
+        Node nodeAJ = new Node("AJ", 779, 705);
 
 
-        // Añadir todos los nodos al grafo
+
         addNode(nodeA);
         addNode(nodeB);
         addNode(nodeC);
@@ -118,40 +127,43 @@ public class Graph {
         addNode(nodeY);
         addNode(nodeZ);
         addNode(nodeAA);
+        addNode(nodeAB);
+        addNode(nodeAC);
+        addNode(nodeAD);
+        addNode(nodeAE);
+        addNode(nodeAF);
+        addNode(nodeAG);
+        addNode(nodeAH);
+        addNode(nodeAI);
+        addNode(nodeAJ);
 
-        // Definir las aristas (conexiones) según tu descripción de caminos dirigidos:
-        // "A va a B, B a C, C va a D o F, D va a E y E va a A, F va a G, G va a H, H va I o J y J va a K y K va a L"
 
-        // A va a B
         addEdge("A", "B", calculateDistance(nodeA, nodeB));
 
-        // B a C
+
         addEdge("B", "C", calculateDistance(nodeB, nodeC));
 
-        // C va a D o F
+
         addEdge("C", "D", calculateDistance(nodeC, nodeD));
         addEdge("C", "F", calculateDistance(nodeC, nodeF));
 
-        // D va a E
+
         addEdge("D", "E", calculateDistance(nodeD, nodeE));
 
-        // E va a A
-        addEdge("E", "A", calculateDistance(nodeE, nodeA));
 
-        // F va a G
+
         addEdge("F", "G", calculateDistance(nodeF, nodeG));
 
-        // G va a H
+
         addEdge("G", "H", calculateDistance(nodeG, nodeH));
 
-        // H va I o J
         addEdge("H", "I", calculateDistance(nodeH, nodeI));
         addEdge("H", "J", calculateDistance(nodeH, nodeJ));
 
-        // J va a K
+
         addEdge("J", "K", calculateDistance(nodeJ, nodeK));
 
-        // K va a L
+
         addEdge("K", "L", calculateDistance(nodeK, nodeL));
 
         addEdge("L", "F", calculateDistance(nodeK, nodeL));
@@ -177,5 +189,34 @@ public class Graph {
         addEdge("Y", "Z", calculateDistance(nodeK, nodeL));
         addEdge("Z", "AA", calculateDistance(nodeK, nodeL));
         addEdge("AA", "T", calculateDistance(nodeK, nodeL));
+        addEdge("E", "AB", calculateDistance(nodeK, nodeL));
+        addEdge("AB", "AC", calculateDistance(nodeK, nodeL));
+        addEdge("AB", "A", calculateDistance(nodeK, nodeL));
+        addEdge("M", "AD", calculateDistance(nodeK, nodeL));
+        addEdge("AD", "C", calculateDistance(nodeK, nodeL));
+        addEdge("O", "AE", calculateDistance(nodeK, nodeL));
+        addEdge("E", "A", calculateDistance(nodeK, nodeL));
+        addEdge("P", "AF", calculateDistance(nodeK, nodeL));
+        addEdge("U", "AG", calculateDistance(nodeK, nodeL));
+        addEdge("N", "AH", calculateDistance(nodeK, nodeL));
+        addEdge("T", "AI", calculateDistance(nodeK, nodeL));
+        addEdge("S", "AJ", calculateDistance(nodeK, nodeL));
+
+
+
+    }
+
+    public Node findNearestNode(double x, double y) {
+        Node nearest = null;
+        double minDistanceSq = Double.MAX_VALUE; // Cuadrado de la distancia para evitar Math.sqrt repetidamente
+
+        for (Node node : nodes.values()) {
+            double distSq = Math.pow(node.getX() - x, 2) + Math.pow(node.getY() - y, 2);
+            if (distSq < minDistanceSq) {
+                minDistanceSq = distSq;
+                nearest = node;
+            }
+        }
+        return nearest;
     }
 }

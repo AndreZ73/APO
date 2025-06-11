@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Car1 extends Thread {
+public class EmergencyVehicle extends Thread {
     private Random random;
 
     private Canvas canvas;
@@ -39,7 +39,7 @@ public class Car1 extends Thread {
     private Node currentNode;
     private Node targetNode;
 
-    public Car1(Canvas canvas, int x, int y, int w, int h, Graph mapGraph) {
+    public EmergencyVehicle(Canvas canvas, int x, int y, int w, int h, Graph mapGraph, CarType type) {
         this.canvas = canvas;
         this.random = new Random();
         this.gc = canvas.getGraphicsContext2D();
@@ -50,59 +50,70 @@ public class Car1 extends Thread {
         this.state = 0;
         this.speed = 6;
 
+        String basePath;
+        String vehicleName;
+
+        switch (type) {
+            case POLICE:
+                basePath = "/EmergencyVehicles/Police/";
+                vehicleName = "POLICE";
+                break;
+            case AMBULANCE:
+                basePath = "/EmergencyVehicles/Ambulance/";
+                vehicleName = "AMBULANCE";
+                break;
+            case FIRETRUCK:
+                basePath = "/EmergencyVehicles/FireTruck/";
+                vehicleName = "Red_CAMPER";
+                break;
+            default:
+                basePath = "/EmergencyVehicles/Police/";
+                vehicleName = "POLICE";
+                System.err.println("Warning: Unknown CarType, defaulting to Police images.");
+                break;
+        }
+
         north = new ArrayList<>();
-        for (int i = 0; i < 11; i++) {
-            String filename = String.format("/Car1/North/POLICE_CLEAN_NORTH_%03d.png", i);
-            loadAndAddImage(north, filename);
-        }
-
         west = new ArrayList<>();
-        for (int i = 0; i < 11; i++) {
-            String filename = String.format("/Car1/West/POLICE_CLEAN_WEST_%03d.png", i);
-            loadAndAddImage(west, filename);
-        }
-
         east = new ArrayList<>();
-        for (int i = 0; i < 11; i++) {
-            String filename = String.format("/Car1/East/POLICE_CLEAN_EAST_%03d.png", i);
-            loadAndAddImage(east, filename);
-        }
-
         south = new ArrayList<>();
-        for (int i = 0; i < 11; i++) {
-            String filename = String.format("/Car1/South/POLICE_CLEAN_SOUTH_%03d.png", i);
-            loadAndAddImage(south, filename);
-        }
 
-        NE = loadImage("/Car1/POLICE_CLEAN_NORTHEAST_000.png");
-        NW = loadImage("/Car1/POLICE_CLEAN_NORTHWEST_000.png");
-        SE = loadImage("/Car1/POLICE_CLEAN_SOUTHEAST_000.png");
-        SW = loadImage("/Car1/POLICE_CLEAN_SOUTHWEST_000.png");
+        // Load animated sprites for cardinal directions
+        for (int i = 0; i < 11; i++) {
+                loadAndAddImage(north, String.format(basePath + "North/%s_CLEAN_NORTH_%03d.png", vehicleName, i));
+                loadAndAddImage(west, String.format(basePath + "West/%s_CLEAN_WEST_%03d.png", vehicleName, i));
+                loadAndAddImage(east, String.format(basePath + "East/%s_CLEAN_EAST_%03d.png", vehicleName, i));
+                loadAndAddImage(south, String.format(basePath + "South/%s_CLEAN_SOUTH_%03d.png", vehicleName, i));
+
+            NE = loadImage(basePath + vehicleName + "_CLEAN_NORTHEAST_000.png");
+            NW = loadImage(basePath + vehicleName + "_CLEAN_NORTHWEST_000.png");
+            SE = loadImage(basePath + vehicleName + "_CLEAN_SOUTHEAST_000.png");
+            SW = loadImage(basePath + vehicleName + "_CLEAN_SOUTHWEST_000.png");
+        }
 
         this.mapGraph = mapGraph;
         this.currentNode = mapGraph.findNearestNode(x, y);
         if (this.currentNode != null) {
             this.x = (int) this.currentNode.getX();
             this.y = (int) this.currentNode.getY();
-            // System.out.println("Carro inició en el nodo: " + this.currentNode.getId() + " (" + this.x + ", " + this.y + ")"); // Kept for important startup info
         } else {
-            System.err.println("Advertencia: No se encontró un nodo cercano para las coordenadas iniciales del Car1: (" + x + ", " + y + ").");
+            System.err.println("Warning: No nearest node found for initial coordinates (" + x + ", " + y + "). Attempting to set to node 'A'.");
             this.currentNode = mapGraph.getNode("A");
             if (this.currentNode != null) {
                 this.x = (int) this.currentNode.getX();
                 this.y = (int) this.currentNode.getY();
-                System.out.println("Carro inició en el nodo 'A' por defecto (" + this.x + ", " + this.y + ").");
+                System.out.println("Vehicle started at default node 'A' (" + this.x + ", " + this.y + ").");
             } else {
-                System.err.println("Error fatal: No se pudo establecer un nodo inicial para el carro. Asegúrate de que el nodo 'A' existe.");
+                System.err.println("Fatal Error: Could not set initial node for the vehicle. Ensure node 'A' exists in your graph.");
             }
         }
         this.targetNode = null;
     }
 
     private Image loadImage(String path) {
-        InputStream is = Car1.class.getResourceAsStream(path);
+        InputStream is = EmergencyVehicle.class.getResourceAsStream(path);
         if (is == null) {
-            System.err.println("¡ERROR! No se pudo encontrar el recurso de imagen: " + path);
+            System.err.println("ERROR! Could not find image resource: " + path);
             return null;
         } else {
             return new Image(is);
@@ -125,14 +136,11 @@ public class Car1 extends Thread {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 if (targetNode == null) {
-                    // System.out.println("DEBUG: Carro en nodo " + (currentNode != null ? currentNode.getId() : "null") + ". Eligiendo siguiente nodo...");
                     chooseNextNode();
                     if (targetNode == null) {
-                        System.out.println("Carro en nodo " + (currentNode != null ? currentNode.getId() : "null") + " sin target. Posiblemente atascado. Esperando...");
+                        System.out.println("Vehicle at node " + (currentNode != null ? currentNode.getId() : "null") + " with no target. Possibly stuck. Waiting...");
                         sleepMillis(500);
                         continue;
-                    } else {
-                        // System.out.println("DEBUG: Nuevo targetNode elegido: " + targetNode.getId());
                     }
                 }
 
@@ -158,13 +166,12 @@ public class Car1 extends Thread {
                 y = (int) targetNode.getY();
                 currentNode = targetNode;
                 targetNode = null;
-                // System.out.println("Carro llegó al nodo: " + currentNode.getId() + ". Preparando para la siguiente decisión."); // Kept for important movement info
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.err.println("El hilo Car1 fue interrumpido: " + e.getMessage());
+            System.err.println("The EmergencyVehicle thread was interrupted: " + e.getMessage());
         } catch (Exception e) {
-            System.err.println("Error inesperado en el hilo Car1: " + e.getMessage());
+            System.err.println("Unexpected error in EmergencyVehicle thread: " + e.getMessage());
             e.printStackTrace();
             try {
                 sleepMillis(500);
@@ -172,32 +179,28 @@ public class Car1 extends Thread {
                 Thread.currentThread().interrupt();
             }
         }
-        System.out.println("Hilo Car1 terminado.");
+        System.out.println("EmergencyVehicle thread terminated.");
     }
 
     private void chooseNextNode() {
-        // System.out.println("DEBUG: Entrando a chooseNextNode desde " + (currentNode != null ? currentNode.getId() : "null"));
         if (currentNode == null) {
-            System.err.println("Error: CurrentNode es nulo al intentar elegir el siguiente nodo. No se puede elegir destino.");
+            System.err.println("Error: CurrentNode is null when trying to choose the next node. Cannot choose destination.");
             return;
         }
 
         List<Edge> possibleEdges = currentNode.getEdges();
-        // System.out.println("DEBUG: Nodo " + currentNode.getId() + " tiene " + possibleEdges.size() + " aristas salientes.");
 
         if (possibleEdges.isEmpty()) {
-            System.out.println("El nodo " + currentNode.getId() + " no tiene salidas. Carro detenido.");
+            System.out.println("Node " + currentNode.getId() + " has no outgoing edges. Vehicle stopped.");
             targetNode = null;
             return;
         }
 
         if (possibleEdges.size() == 1) {
             targetNode = possibleEdges.get(0).getTarget();
-            // System.out.println("DEBUG: Eligiendo el único camino desde " + currentNode.getId() + " a " + targetNode.getId());
         } else {
             int randomIndex = random.nextInt(possibleEdges.size());
             targetNode = possibleEdges.get(randomIndex).getTarget();
-            // System.out.println("DEBUG: Eligiendo al azar desde " + currentNode.getId() + " a " + targetNode.getId() + " (entre " + possibleEdges.size() + " opciones)");
         }
     }
 
@@ -208,16 +211,16 @@ public class Car1 extends Thread {
         boolean movingY = Math.abs(dy) > threshold;
 
         if (movingX && movingY) {
-            if (dx > 0 && dy < 0) state = 4; // NE
-            else if (dx < 0 && dy < 0) state = 5; // NW
-            else if (dx > 0 && dy > 0) state = 6; // SE
-            else if (dx < 0 && dy > 0) state = 7; // SW
+            if (dx > 0 && dy < 0) state = 4;
+            else if (dx < 0 && dy < 0) state = 5;
+            else if (dx > 0 && dy > 0) state = 6;
+            else if (dx < 0 && dy > 0) state = 7;
         } else if (movingX) {
-            if (dx > 0) state = 2; // East
-            else state = 3; // West
+            if (dx > 0) state = 2;
+            else state = 3;
         } else if (movingY) {
-            if (dy > 0) state = 1; // South
-            else state = 0; // North
+            if (dy > 0) state = 1;
+            else state = 0;
         }
     }
 
@@ -237,7 +240,7 @@ public class Car1 extends Thread {
 
         if (currentImage != null) {
             gc.drawImage(currentImage, x, y, w, h);
-            if (state >=0 && state <=3) {
+            if (state >= 0 && state <= 3) {
                 frame++;
             } else {
                 frame = 0;

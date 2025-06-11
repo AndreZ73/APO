@@ -8,18 +8,14 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import model.Car1;
+import model.*;
 import model.Incident;
 import model.IncidentManager;
 import model.IncidentSprite;
 import graph.Graph;
 import graph.Node;
-import graph.Edge;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -49,7 +45,9 @@ public class GameController implements Initializable {
     private final double SCALE_STEP = 0.1;
     private double MIN_SCALE = 0.5;
 
-    private Car1 car1;
+    private EmergencyVehicle ambulance;
+    private EmergencyVehicle fireTruck;
+    private EmergencyVehicle police;
     private Graph mapGraph;
 
     @FXML
@@ -150,8 +148,14 @@ public class GameController implements Initializable {
             }).start();
         });
 
-        car1 = new Car1(canvas, 176, 580, 50, 50, mapGraph);
-        car1.start();
+        ambulance = new EmergencyVehicle(canvas, 176, 580, 50, 50, mapGraph, CarType.AMBULANCE);
+        ambulance.start();
+
+        police = new EmergencyVehicle(canvas, 176, 580, 50, 50, mapGraph, CarType.POLICE);
+        police.start();
+
+        fireTruck = new EmergencyVehicle(canvas, 176, 580, 50, 50, mapGraph, CarType.FIRETRUCK);
+        fireTruck.start();
     }
 
     private void updateGameMuteIcon() {
@@ -306,7 +310,9 @@ public class GameController implements Initializable {
         gc.scale(scaleFactor, scaleFactor);
         gc.translate(-cameraX, -cameraY);
 
-        car1.paint();
+        ambulance.paint();
+        police.paint();
+        fireTruck.paint();
 
         for (IncidentSprite sprite : activeIncidentSprites.values()) {
             sprite.paint(gc);

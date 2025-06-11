@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import model.Incident;
 import model.IncidentManager;
@@ -29,12 +30,23 @@ public class IncidentPanelController {
         // Redibuja cada vez que incrementa el total (simple pero funcional)
         manager.totalIncidentsProperty().addListener((obs, oldV, newV) -> drawIncidents());
         drawIncidents();
+        
+        incidentCanvas.setFocusTraversable(true);
+
+        incidentCanvas.requestFocus();
+
+        incidentCanvas.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.Q) {
+                SceneController.getInstance().showMap();
+            }
+        });
     }
 
     @FXML
     private void handleBack() {
         SceneController.getInstance().showMap();
     }
+
 
     //----------------------------------------------------------------------------------------------
     // Dibujo en Canvas

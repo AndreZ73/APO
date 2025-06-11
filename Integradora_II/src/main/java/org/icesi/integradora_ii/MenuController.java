@@ -72,12 +72,15 @@ public class MenuController implements Initializable {
         });
     }
 
+
     @FXML
     public void EnterGame(ActionEvent event) {
+        try {
+            Stage currentStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
 
-        try{
-            SceneController.getInstance().init(new Stage());
+            SceneController.getInstance().init(currentStage);
             SceneController.getInstance().showMap();
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
